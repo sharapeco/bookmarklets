@@ -1,0 +1,4 @@
+[InternetShortcut]
+URL=javascript:(e=>{((e,t,n,i)=>(t=e.createElement("div"),n=e.createElement("div"),Object.assign(n.style,{fontSize:"18px",whiteSpace:"pre-line"}),(i=e.createElement("div")).textContent="Click this area to copy.",Object.assign(i.style,{fontSize:"75%",color:"#777"}),Object.assign(t.style,{position:"fixed",zIndex:"99999",left:"10px",top:"10px",width:"400px",padding:"10px",background:"#fff",borderRadius:"5px",boxShadow:"0 2px 5px rgba(0,0,0,20%)",font:"400 16px/1.2 sans-serif",lineHeight:"",cursor:"pointer"}),t.appendChild(n),t.appendChild(i),t.onclick=(()=>{e.getSelection().selectAllChildren(n),e.execCommand("copy"),e.body.removeChild(t)}),e.body.appendChild(t),n))(document).textContent=e})(`[${document.title} ${document.URL}]`);
+IDList=
+HotKey=0

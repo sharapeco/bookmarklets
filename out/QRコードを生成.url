@@ -1,0 +1,4 @@
+[InternetShortcut]
+URL=javascript:location.href="http://localhost/qr/?data="+encodeURIComponent(document.URL);
+IDList=
+HotKey=0

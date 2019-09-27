@@ -1,0 +1,4 @@
+[InternetShortcut]
+URL=javascript:((t,e,o)=>{[document.body,document.documentElement].map(t=>e.map(e=>{t["on"+e]=o,t.style.userSelect="auto"}))})(0,["contextmenu","selectstart","copy"],t=>t.stopPropagation());
+IDList=
+HotKey=0
