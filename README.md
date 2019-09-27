@@ -13,7 +13,7 @@ npm install
 ### with yarn
 
 ```
-npm install
+yarn install
 ```
 
 ## Build
