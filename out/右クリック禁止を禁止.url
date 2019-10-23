@@ -1,4 +1,4 @@
 [InternetShortcut]
-URL=javascript:((t,e,o)=>{[document.body,document.documentElement].map(t=>e.map(e=>{t["on"+e]=o,t.style.userSelect="auto"}))})(0,["contextmenu","selectstart","copy"],t=>t.stopPropagation());
+URL=javascript:((e,t,o)=>{[document.body,document.documentElement,...[].slice.call(document.querySelectorAll("img"))].map(e=>t.map(t=>{e["on"+t]=o,e.style.userSelect="auto"}))})(0,["contextmenu","selectstart","copy"],e=>e.stopPropagation());
 IDList=
 HotKey=0

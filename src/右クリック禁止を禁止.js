@@ -11,6 +11,7 @@
 	[
 		document.body,
 		document.documentElement,
+		...[].slice.call(document.querySelectorAll("img")),
 	],
 	// events
 	[
