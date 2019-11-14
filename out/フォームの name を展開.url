@@ -1,0 +1,4 @@
+[InternetShortcut]
+URL=javascript:[].forEach.call(document.querySelectorAll("input[name], textarea[name], select[name], button[name]"),e=>{e.parentNode.insertBefore((e=>{const n=document.createElement("span");return Object.assign(n.style,{display:"inline-block",margin:"0 2px 2px",padding:"8px",font:'300 12px/1 "Verdana", sans-serif',color:"#666",background:"#ffffeb",border:"solid 1px #ddd",borderRadius:"3px"}),n.textContent=e,n})(e.getAttribute("name")),e)});
+IDList=
+HotKey=0
