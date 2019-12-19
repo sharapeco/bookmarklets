@@ -6,6 +6,7 @@
 			elem.style.userSelect = 'auto'
 		})
 	)
+	document.onmousedown = null
 })(
 	// elements
 	[
