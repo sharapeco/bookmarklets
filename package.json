@@ -5,11 +5,11 @@
   "license": "MIT",
   "devDependencies": {
     "find": "^0.3.0",
-    "rimraf": "^3.0.0",
     "uglify-es": "^3.3.9"
   },
   "scripts": {
     "build": "node build.js",
-    "clean": "rimraf ./out/*"
-  }
+    "clean": "rm -r ./out/*"
+  },
+  "dependencies": {}
 }
