@@ -1,31 +1,11 @@
 # Bookmarklets
 
-My bookmarklets
+My bookmarklets / Bookmarklet builder
 
 ## Setup
 
-### with npm
+Run `yarn install`
 
-```
-npm install
-```
+## Build bookmarklets
 
-### with yarn
-
-```
-yarn install
-```
-
-## Build
-
-### with npm
-
-```
-npm run build
-```
-
-### with yarn
-
-```
-yarn build
-```
+Run `yarn build`
