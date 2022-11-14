@@ -1,6 +1,6 @@
 node_modules/
 /src/_*
-/out/_*
+/out/
 
 .DS_Store
 Thumbs.db

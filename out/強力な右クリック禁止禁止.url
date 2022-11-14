@@ -1,4 +1,0 @@
-[InternetShortcut]
-URL=javascript:[].map.call(document.querySelectorAll("script"),e=>e.parentNode.removeChild(e)),document.documentElement.innerHTML=document.documentElement.innerHTML;
-IDList=
-HotKey=0
