@@ -22,6 +22,16 @@
 	// 	elem.dispatchEvent(new KeyboardEvent('keydown', { key: 'Tab', keyCode: 0 }))
 	// };
 	// const splitChars = (str) => str.split('');
+	const download = (content, mimeType, name) => {
+		const blob = new Blob([content], { type: mimeType })
+		const link = document.createElement('a')
+		link.href = URL.createObjectURL(blob)
+		link.target = "_blank"
+		link.download = name
+		body.appendChild(link)
+		link.click()
+		body.removeChild(link)
+	}
 
 	switch (origin) {
 		case 'https://secure.goldpoint.co.jp':
@@ -49,7 +59,6 @@
 					break
 				}
 				case '/app/details/': {
-					const title = text('.m-debitaccountpanel_billingdate').replace(/^.*(\d{4})年(\d+)月.*$/, '$1-$2').split('-').map(padDatePart).join('-')
 					const headers = ['日付', '摘要', '金額'];
 					const rows = qsa('.o-list > li').map((li) => [
 						text('.m-listitem_thumb_date', li).replace(/[年月日]/g, '-').split('-').slice(0, 3).map(padDatePart).join('-'),
@@ -57,14 +66,8 @@
 						text('.m-listitem_thumb_price', li).replace('円', ''),
 					])
 					const csv = headers.join(',') + '\r\n' + rows.map((cols) => cols.map(csvCol).join(',')).join('\r\n')
-					console.log('csv created', csv)
-					const blob = new Blob([csv], { type: 'text/csv' })
-					const link = document.createElement('a')
-					link.href = URL.createObjectURL(blob)
-					link.target = "_blank"
-					link.download = `aeon-card-${title}-00.csv`
-					body.appendChild(link)
-					link.click()
+					const title = text('.m-debitaccountpanel_billingdate').replace(/^.*(\d{4})年(\d+)月.*$/, '$1-$2').split('-').map(padDatePart).join('-')
+					download(csv, 'text/csv', `aeon-card-${title}-00.csv`)
 					break
 				}
 			}
