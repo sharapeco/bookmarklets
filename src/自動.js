@@ -1,4 +1,4 @@
-((document) => {
+(async (document) => {
 	const { origin, pathname } = location;
 	const { body } = document;
 	const qs = (query, p) => (p || document).querySelector(query);
@@ -6,11 +6,11 @@
 	const text = (query, p) => qs(query, p).textContent.trim();
 	const csvCol = (value) => '"' + value.replace(/"/g, '""') + '"';
 	const padDatePart = (part) => part.padStart(2, '0')
-	// const sleep = (time) => {
-	// 	return new Promise((resolve) => {
-	// 		setTimeout(resolve, time)
-	// 	})
-	// };
+	const sleep = (time) => {
+		return new Promise((resolve) => {
+			setTimeout(resolve, time)
+		})
+	};
 	// const keyCode = (key) => {
 	// 	return key.toUpperCase().charCodeAt(0)
 	// }
@@ -44,6 +44,17 @@
 					const link = qs('.btn_big_size')
 					if (!/\bCSV\b/.test(link.textContent)) break
 					link.click()
+					break
+				}
+			}
+			break
+		case 'https://recochoku.jp':
+			switch (pathname) {
+				case '/lapap/wsPurchaseComp': {
+					for (let link of qsa('.download-track-list__btn-link')) {
+						link.click()
+						await sleep(5000)
+					}
 					break
 				}
 			}
