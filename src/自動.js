@@ -72,7 +72,7 @@
 					const rows = qsa('.o-list > li').map((li) => [
 						text('.m-listitem_thumb_date', li).replace(/[年月日]/g, '-').split('-').slice(0, 3).map(padDatePart).join('-'),
 						text('.u-omitpipe_contents', li),
-						text('.m-listitem_thumb_price', li).replace('円', ''),
+						text('.m-listitem_thumb_price', li).replace('円', '').replace(',', ''),
 					])
 					const csv = headers.join(',') + '\r\n' + rows.map((cols) => cols.map(csvCol).join(',')).join('\r\n')
 					const title = text('.m-debitaccountpanel_billingdate').replace(/^.*(\d{4})年(\d+)月.*$/, '$1-$2').split('-').map(padDatePart).join('-')
