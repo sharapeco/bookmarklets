@@ -67,6 +67,10 @@
 					input.focus()
 					break
 				}
+				case '/app/': {
+					location.href = 'https://www.aeon.co.jp/app/details/'
+					break
+				}
 				case '/app/details/': {
 					const headers = ['日付', '摘要', '金額'];
 					const rows = qsa('.o-list > li').map((li) => [
