@@ -37,7 +37,7 @@
 
 	const copy = (text) => {
 		navigator.clipboard.writeText(text);
-		console.log(`Copied: ${text}`);
+		notify(`コピーしました:\n${text}`);
 	};
 
 	const notify = async (text) => {
@@ -138,7 +138,6 @@
 						.map((div) => div.textContent)
 						.join("\n");
 					copy(text);
-					notify(`Copied: ${text}`);
 					break;
 				}
 			}
