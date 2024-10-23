@@ -2,11 +2,15 @@
 	// NOTE: map のほうが forEach より短いので
 	elements.map(
 		elem => events.map(type => {
-			elem['on' + type] = stopEvent
+			elem[`on${type}`] = stopEvent
 			elem.style.userSelect = 'auto'
 		})
-	)
-	document.onmousedown = null
+	);
+	events.map(type => {
+		[].map.call(document.querySelectorAll(`[on${type}]`), elem => {
+			elem[`on${type}`] = null
+		})
+	})
 })(
 	// elements
 	[
@@ -17,8 +21,9 @@
 	// events
 	[
 		'contextmenu',
-		'selectstart',
 		'copy',
+		'mousedown',
+		'selectstart',
 	],
 	// stopEvent
 	e => e.stopPropagation()
