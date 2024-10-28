@@ -1,3 +1,4 @@
+// サイトごとの自動操作をまとめたスクリプト
 (async (document) => {
 	const { origin, pathname } = location;
 	const { body } = document;
@@ -8,22 +9,13 @@
 	const text = (query, p) => qs(query, p).textContent.trim();
 	const csvCol = (value) => `"${value.replace(/"/g, '""')}"`;
 	const padDatePart = (part) => part.padStart(2, "0");
+
 	const sleep = (time) => {
 		return new Promise((resolve) => {
 			setTimeout(resolve, time);
 		});
 	};
-	// const keyCode = (key) => {
-	// 	return key.toUpperCase().charCodeAt(0)
-	// }
-	// const type = async (elem, keys) => {
-	// 	if (!Array.isArray(keys)) return
-	// 	elem.focus()
-	// 	elem.value = keys
-	// 	await sleep(100)
-	// 	elem.dispatchEvent(new KeyboardEvent('keydown', { key: 'Tab', keyCode: 0 }))
-	// };
-	// const splitChars = (str) => str.split('');
+
 	const download = (content, mimeType, name) => {
 		const blob = new Blob([content], { type: mimeType });
 		const link = E("a");
@@ -40,6 +32,7 @@
 		notify(`コピーしました:\n${text}`);
 	};
 
+	// 一時的なメッセージを表示する
 	const notify = async (text) => {
 		const outer = E("div");
 		const outerStyle = outer.style;
@@ -84,12 +77,15 @@
 	};
 
 	switch (origin) {
+		// ゴールドポイントカード+
 		case "https://secure.goldpoint.co.jp":
 			switch (pathname) {
+				// ログイン後の画面で明細ページを開く
 				case "/gpm/membertop.html": {
 					qs('a[href*="/web_meisai/"]').click();
 					break;
 				}
+				// 明細ページでCSVダウンロードリンクをクリックする
 				case "/memx/web_meisai/top/index.html": {
 					const link = qs(".btn_big_size");
 					if (!/\bCSV\b/.test(link.textContent)) break;
@@ -98,8 +94,10 @@
 				}
 			}
 			break;
+		// レコチョク
 		case "https://recochoku.jp":
 			switch (pathname) {
+				// 購入した音楽を一括ダウンロード
 				case "/lapap/wsPurchaseComp": {
 					for (const link of qsa(".download-track-list__btn-link")) {
 						link.click();
@@ -109,18 +107,22 @@
 				}
 			}
 			break;
+		// イオンカード
 		case "https://www.aeon.co.jp":
 			switch (pathname) {
+				// ログイン画面でオートコンプリートを有効にする
 				case "/auth/realms/msweb/protocol/openid-connect/auth": {
 					const input = qs("input#username");
 					input.autocomplete = "username";
 					input.focus();
 					break;
 				}
+				// ログイン後の画面で明細ページを開く
 				case "/app/": {
 					location.href = "https://www.aeon.co.jp/app/details/";
 					break;
 				}
+				// 明細をCSV形式でダウンロード
 				case "/app/details/": {
 					const headers = ["日付", "摘要", "金額"];
 					const rows = qsa(".o-list > li").map((li) => [
@@ -148,6 +150,7 @@
 				}
 			}
 			break;
+		// Duolingo
 		case "https://www.duolingo.com":
 			switch (pathname) {
 				case "/lesson": {
@@ -159,14 +162,14 @@
 				}
 			}
 			break;
+		// 北陸電力 ほくリンク
 		case "https://mieruka.rikuden.co.jp":
 			switch (pathname) {
+				// Web明細をスプレッドシートに貼り付けられる形式でコピーする
 				case "/OI008_WEB/oi008_ka004p01/oi008_ka004_scr001.render": {
-					// 電力量使用明細の次の項目をスプレッドシートに貼り付けられる形式でコピーする
-					// 使用量 [kWh]	基本料金, 電力量1段, 電力量2段, 電力量3段, 燃料費調整, 割引, 再エネ賦課金
 					const records = tableRecords(qs("[class*='result-using-expense-t02']"));
 					copy([
-						text("[id*='shiyoryohyoji_1']"),
+						text("[id*='shiyoryohyoji_1']"), // 使用量 [kWh]
 						yenSenToNumber(records.get("基本料金")),
 						yenSenToNumber(records.get("電力量料金（１段階目）")),
 						yenSenToNumber(records.get("電力量料金（２段階目）")),
