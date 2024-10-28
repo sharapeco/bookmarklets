@@ -4,8 +4,8 @@ My bookmarklets / Bookmarklet builder
 
 ## Setup
 
-Run `yarn install`
+Run `npm install`
 
 ## Build bookmarklets
 
-Run `yarn build`
+Run `npm run build`

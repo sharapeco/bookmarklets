@@ -1,7 +1,7 @@
 const path = require('path')
 const fs = require('fs')
 const find = require('find')
-const UglifyJS = require('uglify-es')
+const UglifyJS = require('uglify-js')
 
 const SRC = path.join(__dirname, 'src')
 const DEST = path.join(__dirname, 'out')
