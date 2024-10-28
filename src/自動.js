@@ -62,8 +62,25 @@
 		innerStyle.whiteSpace = "pre-line";
 		outer.appendChild(inner);
 		body.appendChild(outer);
-		await sleep(2000);
+		await sleep(9999);
 		body.removeChild(outer);
+	};
+
+	// tr*>th+td という構造のテーブルの th と td の組を Map にして返す
+	const tableRecords = (table) => {
+		const records = new Map();
+		qsa("th:not([rowspan])", table).map((th) => {
+			const td = th.nextElementSibling;
+			records.set(th.textContent.trim(), td?.textContent?.trim());
+		});
+		return records;
+	};
+
+	// ○円○銭 という文字列を数値に変換する
+	const yenSenToNumber = (text) => {
+		if (text == null) return "";
+		const [yen, sen] = text.replace(/,/g, "").replace(/\s*銭/, "").split(/\s*円\s*/);
+		return `${yen}.${sen}`;
 	};
 
 	switch (origin) {
@@ -138,6 +155,26 @@
 						.map((div) => div.textContent)
 						.join("\n");
 					copy(text);
+					break;
+				}
+			}
+			break;
+		case "https://mieruka.rikuden.co.jp":
+			switch (pathname) {
+				case "/OI008_WEB/oi008_ka004p01/oi008_ka004_scr001.render": {
+					// 電力量使用明細の次の項目をスプレッドシートに貼り付けられる形式でコピーする
+					// 使用量 [kWh]	基本料金, 電力量1段, 電力量2段, 電力量3段, 燃料費調整, 割引, 再エネ賦課金
+					const records = tableRecords(qs("[class*='result-using-expense-t02']"));
+					copy([
+						text("[id*='shiyoryohyoji_1']"),
+						yenSenToNumber(records.get("基本料金")),
+						yenSenToNumber(records.get("電力量料金（１段階目）")),
+						yenSenToNumber(records.get("電力量料金（２段階目）")),
+						yenSenToNumber(records.get("電力量料金（３段階目）")),
+						yenSenToNumber(records.get("燃料費調整額")),
+						yenSenToNumber(records.get("割引")),
+						yenSenToNumber(records.get("再エネ発電賦課金")),
+					].join("\t"));
 					break;
 				}
 			}
