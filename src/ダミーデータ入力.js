@@ -1,7 +1,7 @@
-fetch('https://suzume.dev/tools/dummy/names.csv')
+fetch('https://lab.suzume.dev/assets/lipsum/addresses-v1.csv')
 	.then((res) => res.text())
 	.then((data) => {
-		let used = {};
+		const used = {};
 		const cols = [
 			/slug/i, // 0
 			/email/i, // 11
@@ -20,17 +20,17 @@ fetch('https://suzume.dev/tools/dummy/names.csv')
 			/(street|address)/i, // 8
 			/(tel|phone)/i, // 9
 			/fax/i, // 10
-		],
-			items = data.split('\n')
+		];
+		const items = data.split('\n')
 				.map((line) => line.split(','))
 				.map((v) => {
-					const [sei, mei] = v[3].split(' '),
-						[seiKana, meiKana] = v[4].split(' ');
+					const [sei, mei] = v[3].split(' ');
+					const [seiKana, meiKana] = v[4].split(' ');
 					return [v[0], ...v.slice(11, 13), ...v.slice(1, 3), sei, mei, seiKana, meiKana, ...v.slice(3, 11)];
-				}),
-			storageKey = 'local.bookmarklets.dummyData.index',
-			prev = localStorage.getItem(storageKey),
-			index = ((prev == null ? -1 : +prev) + 1) % items.length;
+				});
+		const storageKey = 'local.bookmarklets.dummyData.index';
+		const prev = localStorage.getItem(storageKey);
+		const index = ((prev == null ? -1 : +prev) + 1) % items.length;
 
 		[].forEach.call(document.querySelectorAll('input[name], textarea[name]'), (input) => {
 			for (const [colIndex, col] of Object.entries(cols)) {
