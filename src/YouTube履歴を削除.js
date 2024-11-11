@@ -7,10 +7,6 @@
 		return;
 	}
 
-	const scrollElement = document.documentElement;
-	let prevScrollY = 0;
-	scroll(0, 0);
-
 	const query = prompt("検索クエリ：");
 	if (!query) return;
 
@@ -18,7 +14,33 @@
 	const toContinue = confirm(`"${query}" に一致する動画タイトル：` + "\n" + matchTitles.join("\n") + "\n\nこれらの動画を削除しますか？");
 	if (!toContinue) return;
 
-	while (true) {
+	let signal = true;
+
+	const stopButton = document.createElement("button");
+	stopButton.textContent = "停止";
+	Object.assign(stopButton.style, {
+		position: "fixed",
+		zIndex: 10000,
+		right: "1em",
+		bottom: "1em",
+		padding: "1em",
+		font: "bold 1.5rem/1.2 sans-serif",
+		color: "#fff",
+		background: "#e23",
+		border: "none",
+		borderRadius: "0.5em",
+	});
+	stopButton.onclick = () => {
+		signal = false;
+		stopButton.remove();
+	};
+	document.body.appendChild(stopButton);
+
+	const scrollElement = document.documentElement;
+	let prevScrollY = 0;
+	scroll(0, 0);
+
+	while (signal) {
 		const matches = qsa("#video-title").map((title) => title.textContent.indexOf(query) >= 0 ? title : null).filter((el) => el);
 
 		for (const title of matches) {
