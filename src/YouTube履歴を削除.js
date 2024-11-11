@@ -11,6 +11,7 @@
 	if (!query) return;
 
 	const matchTitles = qsa("#video-title").map((title) => title.textContent.indexOf(query) >= 0 ? title : null).filter((el) => el).map((el) => el.textContent);
+	// biome-ignore lint/style/useTemplate: ブックマークレットでは改行を含むテンプレートリテラルを使用できない
 	const toContinue = confirm(`"${query}" に一致する動画タイトル：` + "\n" + matchTitles.join("\n") + "\n\nこれらの動画を削除しますか？");
 	if (!toContinue) return;
 
