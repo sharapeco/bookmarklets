@@ -1,11 +1,32 @@
 // サイトごとの自動操作をまとめたスクリプト
 (async (document) => {
+	const EOL = "\n";
+	const CSV_EOL = "\r\n";
 	const { origin, pathname } = location;
 	const { body } = document;
 	const qs = (query, p) => (p || document).querySelector(query);
 	const qsa = (query, p) =>
 		[].slice.call((p || document).querySelectorAll(query));
-	const E = (tag) => document.createElement(tag);
+	const h = (tag, attributes, children) => {
+		const element = document.createElement(tag);
+		for (const [key, value] of Object.entries(attributes)) {
+			if (key === "style") {
+				Object.assign(element.style, value);
+				continue;
+			}
+			if (typeof value === "string") {
+				element.setAttribute(key, value);
+			}
+		}
+		for (const child of children) {
+			if (typeof child === "string") {
+				element.appendChild(document.createTextNode(child));
+				continue;
+			}
+			element.appendChild(child);
+		}
+		return element;
+	};
 	const text = (query, p) => qs(query, p).textContent.trim();
 	const csvCol = (value) => `"${value.replace(/"/g, '""')}"`;
 	const padDatePart = (part) => part.padStart(2, "0");
@@ -18,7 +39,7 @@
 
 	const download = (content, mimeType, name) => {
 		const blob = new Blob([content], { type: mimeType });
-		const link = E("a");
+		const link = h("a");
 		link.href = URL.createObjectURL(blob);
 		link.target = "_blank";
 		link.download = name;
@@ -29,34 +50,52 @@
 
 	const copy = (text) => {
 		navigator.clipboard.writeText(text);
-		notify(`コピーしました:\n${text}`);
+		notify(
+			h("div", { style: { color: "#666", font: "700 80%/1.5 sans-serif" } }, [
+				"コピーしました:",
+			]),
+			text,
+		);
 	};
 
 	// 一時的なメッセージを表示する
-	const notify = async (text) => {
-		const outer = E("div");
-		const outerStyle = outer.style;
-		outerStyle.position = "fixed";
-		outerStyle.zIndex = "infinity";
-		outerStyle.top = outerStyle.left = outerStyle.right = "0";
-		const inner = E("div");
-		inner.textContent = text;
-		const innerStyle = inner.style;
-		innerStyle.background = "#28e";
-		innerStyle.color = "#fff";
-		innerStyle.width = "fit-content";
-		innerStyle.margin = "0 auto";
-		innerStyle.padding = "10px";
-		innerStyle.fontFamily = "sans-serif";
-		innerStyle.fontSize = "15px";
-		innerStyle.fontWeight = "700";
-		innerStyle.textAlign = "center";
-		innerStyle.borderRadius = "0 0 5px 5px";
-		innerStyle.whiteSpace = "pre-line";
-		outer.appendChild(inner);
-		body.appendChild(outer);
+	const notify = async (...text) => {
+		const popup = h(
+			"div",
+			{
+				style: {
+					position: "fixed",
+					zIndex: "infinity",
+					top: "0",
+					left: "0",
+					right: "0",
+				},
+			},
+			[
+				h(
+					"div",
+					{
+						style: {
+							width: "fit-content",
+							margin: "0 auto",
+							padding: "10px",
+							font: "500 15px/1.5 sans-serif",
+							textAlign: "left",
+							whiteSpace: "pre-line",
+							background: "#fff",
+							color: "#222",
+							border: "solid 1px #ddd",
+							borderRadius: "0 0 5px 5px",
+							boxShadow: "0 2px 20px rgba(0,0,0,.4)",
+						},
+					},
+					text,
+				),
+			],
+		);
+		body.appendChild(popup);
 		await sleep(9999);
-		body.removeChild(outer);
+		body.removeChild(popup);
 	};
 
 	// tr*>th+td という構造のテーブルの th と td の組を Map にして返す
@@ -72,7 +111,10 @@
 	// ○円○銭 という文字列を数値に変換する
 	const yenSenToNumber = (text) => {
 		if (text == null) return "";
-		const [yen, sen] = text.replace(/,/g, "").replace(/\s*銭/, "").split(/\s*円\s*/);
+		const [yen, sen] = text
+			.replace(/,/g, "")
+			.replace(/\s*銭/, "")
+			.split(/\s*円\s*/);
 		return `${yen}.${sen}`;
 	};
 
@@ -137,9 +179,10 @@
 							.replace("円", "")
 							.replace(",", ""),
 					]);
-					const csv = `${headers.join(",")}\r\n${rows
-						.map((cols) => cols.map(csvCol).join(","))
-						.join("\r\n")}`;
+					const csv =
+						headers.join(",") +
+						CSV_EOL +
+						rows.map((cols) => cols.map(csvCol).join(",")).join(CSV_EOL);
 					const title = text(".m-debitaccountpanel_billingdate")
 						.replace(/^.*(\d{4})年(\d+)月.*$/, "$1-$2")
 						.split("-")
@@ -156,7 +199,7 @@
 				case "/lesson": {
 					const text = qsa("div[dir]")
 						.map((div) => div.textContent)
-						.join("\n");
+						.join(EOL);
 					copy(text);
 					break;
 				}
@@ -165,19 +208,28 @@
 		// 北陸電力 ほくリンク
 		case "https://mieruka.rikuden.co.jp":
 			switch (pathname) {
-				// Web明細をスプレッドシートに貼り付けられる形式でコピーする
+				case "/OI008_WEB/oi008_ba002p01/oi008_ba002_scr001.render": {
+					// 最新の明細ページを開く
+					qs("#oi008_ba002_scr001-kenshinkekkashokaibutton")?.click();
+					break;
+				}
 				case "/OI008_WEB/oi008_ka004p01/oi008_ka004_scr001.render": {
-					const records = tableRecords(qs("[class*='result-using-expense-t02']"));
-					copy([
-						text("[id*='shiyoryohyoji_1']"), // 使用量 [kWh]
-						yenSenToNumber(records.get("基本料金")),
-						yenSenToNumber(records.get("電力量料金（１段階目）")),
-						yenSenToNumber(records.get("電力量料金（２段階目）")),
-						yenSenToNumber(records.get("電力量料金（３段階目）")),
-						yenSenToNumber(records.get("燃料費調整額")),
-						yenSenToNumber(records.get("割引")),
-						yenSenToNumber(records.get("再エネ発電賦課金")),
-					].join("\t"));
+					// Web明細をスプレッドシートに貼り付けられる形式でコピーする
+					const records = tableRecords(
+						qs("[class*='result-using-expense-t02']"),
+					);
+					copy(
+						[
+							text("[id*='shiyoryohyoji_1']"), // 使用量 [kWh]
+							yenSenToNumber(records.get("基本料金")),
+							yenSenToNumber(records.get("電力量料金（１段階目）")),
+							yenSenToNumber(records.get("電力量料金（２段階目）")),
+							yenSenToNumber(records.get("電力量料金（３段階目）")),
+							yenSenToNumber(records.get("燃料費調整額")),
+							yenSenToNumber(records.get("割引")),
+							yenSenToNumber(records.get("再エネ発電賦課金")),
+						].join("\t"),
+					);
 					break;
 				}
 			}
