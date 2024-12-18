@@ -1,30 +1,18 @@
-((elements, events, stopEvent) => {
+(() => {
+	const events = ["contextmenu", "copy", "mousedown", "selectstart"];
+	const qsa = (selector, target) =>
+		Array.from((target ?? document).querySelectorAll(selector));
+	const removeEvents = (elem) => {
+		const repl = elem.cloneNode();
+		events.map((type) => repl.removeAttribute(`on${type}`));
+		elem.replaceWith(repl);
+	};
+
 	// NOTE: map のほうが forEach より短いので
-	elements.map(
-		elem => events.map(type => {
-			elem[`on${type}`] = stopEvent
-			elem.style.userSelect = 'auto'
-		})
-	);
-	events.map(type => {
-		[].map.call(document.querySelectorAll(`[on${type}]`), elem => {
-			elem[`on${type}`] = null
-		})
-	})
-})(
-	// elements
-	[
-		document.body,
-		document.documentElement,
-		...[].slice.call(document.querySelectorAll("img")),
-	],
-	// events
-	[
-		'contextmenu',
-		'copy',
-		'mousedown',
-		'selectstart',
-	],
-	// stopEvent
-	e => e.stopPropagation()
-)
+
+	// <img> のイベントを削除
+	qsa("img").map(removeEvents);
+
+	// on* 属性のついた要素のイベントを削除
+	events.map((type) => qsa(`[on${type}]`).map(removeEvents));
+})();
