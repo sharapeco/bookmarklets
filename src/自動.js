@@ -18,7 +18,7 @@
 				element.setAttribute(key, value);
 			}
 		}
-		for (const child of children) {
+		for (const child of (children ?? [])) {
 			if (typeof child === "string") {
 				element.appendChild(document.createTextNode(child));
 				continue;
@@ -39,10 +39,11 @@
 
 	const download = (content, mimeType, name) => {
 		const blob = new Blob([content], { type: mimeType });
-		const link = h("a");
-		link.href = URL.createObjectURL(blob);
-		link.target = "_blank";
-		link.download = name;
+		const link = h("a", {
+			href: URL.createObjectURL(blob),
+			target: "_blank",
+			download: name,
+		});
 		body.appendChild(link);
 		link.click();
 		body.removeChild(link);
