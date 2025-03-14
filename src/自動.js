@@ -5,8 +5,7 @@
 	const { origin, pathname } = location;
 	const { body } = document;
 	const qs = (query, p) => (p || document).querySelector(query);
-	const qsa = (query, p) =>
-		[].slice.call((p || document).querySelectorAll(query));
+	const qsa = (query, p) => Array.from((p || document).querySelectorAll(query));
 	const h = (tag, attributes, children) => {
 		const element = document.createElement(tag);
 		for (const [key, value] of Object.entries(attributes)) {
@@ -18,7 +17,7 @@
 				element.setAttribute(key, value);
 			}
 		}
-		for (const child of (children ?? [])) {
+		for (const child of children ?? []) {
 			if (typeof child === "string") {
 				element.appendChild(document.createTextNode(child));
 				continue;
@@ -37,13 +36,31 @@
 		});
 	};
 
-	const download = (content, mimeType, name) => {
-		const blob = new Blob([content], { type: mimeType });
+	const download = (blobOrURL, name) => {
+		const url =
+			blobOrURL instanceof Blob ? URL.createObjectURL(blobOrURL) : blobOrURL;
 		const link = h("a", {
-			href: URL.createObjectURL(blob),
+			href: url,
 			target: "_blank",
 			download: name,
 		});
+		body.appendChild(link);
+		link.click();
+		body.removeChild(link);
+		if (blobOrURL instanceof Blob) {
+			URL.revokeObjectURL(url);
+		}
+	};
+
+	const downloadWithProxy = (items) => {
+		const proxy = "http://macaron.local/tools/download-proxy/";
+		const proxyUrl = new URL(proxy);
+		const searchParams = proxyUrl.searchParams;
+		for (const item of items) {
+			searchParams.append("urls[]", item.src);
+			searchParams.append("names[]", item.download);
+		}
+		const link = h("a", { href: proxyUrl.toString(), target: "_blank" });
 		body.appendChild(link);
 		link.click();
 		body.removeChild(link);
@@ -189,7 +206,10 @@
 						.split("-")
 						.map(padDatePart)
 						.join("-");
-					download(csv, "text/csv", `aeon-card-${title}-00.csv`);
+					download(
+						new Blob([csv], { type: "text/csv" }),
+						`aeon-card-${title}-00.csv`,
+					);
 					break;
 				}
 			}
@@ -231,6 +251,31 @@
 							yenSenToNumber(records.get("再エネ発電賦課金")),
 						].join("\t"),
 					);
+					break;
+				}
+			}
+			break;
+		// コドモン
+		case "https://parents.codmon.com":
+			switch (qs(".toolbar__title")?.textContent) {
+				case "お知らせ詳細": {
+					const title = qs(".timelineDetails_title")?.textContent.trim();
+					if (title == null) break;
+					const dateParts = qs(".timelineDetails_date")
+						.textContent.trim()
+						.replace(/[年月]/gu, ":")
+						.replace(/日/u, ":")
+						.replace(/[時分]/gu, ":")
+						.split(":")
+						.map((s) => s.padStart(2, "0"));
+					const date = `${dateParts[0]}-${dateParts[1]}-${dateParts[2]}T${dateParts[3]}${dateParts[4]}00`;
+					const downloadItems = qsa("ons-carousel-item img")
+						.filter((img) => img.checkVisibility())
+						.map((img, index) => ({
+							src: img.src.replace(/\bwidth=\d+/, "width=0"),
+							download: `${date}_${title}_${(index + 1).toString().padStart(2, "0")}.jpg`,
+						}));
+					downloadWithProxy(downloadItems);
 					break;
 				}
 			}
