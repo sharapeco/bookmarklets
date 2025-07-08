@@ -12,7 +12,7 @@
 	const lcQuery = query.toLocaleLowerCase();
 	const condition = (title) => title.textContent.toLocaleLowerCase().indexOf(lcQuery) >= 0;
 
-	const titleQuery = "ytm-shorts-lockup-view-model a[title]";
+	const titleQuery = "ytd-browse ytm-shorts-lockup-view-model a[title]";
 	const matchTitles = qsa(titleQuery).map((title) => condition(title) ? title : null).filter((el) => el).map((el) => el.textContent.trim());
 	// biome-ignore lint/style/useTemplate: ブックマークレットでは改行を含むテンプレートリテラルを使用できない
 	const toContinue = confirm(`"${query}" に一致するショート動画：` + "\n" + matchTitles.join("\n") + "\n\nこれらの動画を削除しますか？");
