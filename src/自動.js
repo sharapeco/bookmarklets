@@ -280,6 +280,23 @@
 				}
 			}
 			break;
+		// GitHub
+		case "https://github.com": {
+			const editor = qs("slash-command-expander textarea");
+			const removeHeight = (str) => str.replace(/ height="\d+"/g, "");
+			if (editor) {
+				// <img width="1179" height="2556" alt="Image" src="https://github.com/user-attachments/assets/c7c263b2-6368-4e09-9ad6-0b9f20577942" />
+				// ![Screenshot_20250619_171304.jpg](https://github.com/user-attachments/assets/c26bd72d-4bc9-443e-b52b-63383f26e15b)
+				editor.value = editor.value.replace(
+					/<img([^>]*) width="\d+"([^>]*)>/g,
+					(_, attr1, attr2) => `<img${removeHeight(attr1)} width="375"${removeHeight(attr2)}>`
+				).replace(
+					/!\[([^\]]+)]\(([^)]+)\)/g,
+					'<img alt="$1" src="$2" width="375" />'
+				);
+			}
+			break;
+		}
 		default:
 			notify(`未設定 (origin = ${origin}, path = ${pathname})`);
 	}
