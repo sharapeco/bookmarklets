@@ -297,6 +297,15 @@
 			}
 			break;
 		}
+		// Amazon
+		case "https://www.amazon.co.jp": {
+			// 書影のURLをクリップボードにコピーする
+			const img = qs("#landingImage");
+			if (img) {
+				copy(img.src);
+			}
+			break;
+		}
 		default:
 			notify(`未設定 (origin = ${origin}, path = ${pathname})`);
 	}
