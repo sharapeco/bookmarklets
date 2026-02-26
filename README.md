@@ -4,8 +4,8 @@ My bookmarklets / Bookmarklet builder
 
 ## Setup
 
-Run `npm install`
+Run `pnpm install`
 
 ## Build bookmarklets
 
-Run `npm run build`
+Run `pnpm run build`
