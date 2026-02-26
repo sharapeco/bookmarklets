@@ -231,7 +231,7 @@
 			switch (pathname) {
 				case "/OI008_WEB/oi008_ba002p01/oi008_ba002_scr001.render": {
 					// 最新の明細ページを開く
-					qs("#oi008_ba002_scr001-kenshinkekkashokaibutton")?.click();
+					qs("#oi008_ba002_scr001-m_kenshinkekkashokaibutton-0")?.click();
 					break;
 				}
 				case "/OI008_WEB/oi008_ka004p01/oi008_ka004_scr001.render": {
