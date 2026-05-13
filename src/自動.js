@@ -30,6 +30,21 @@
 	const csvCol = (value) => `"${value.replace(/"/g, '""')}"`;
 	const padDatePart = (part) => part.padStart(2, "0");
 
+	const removeTrackingQueryParams = () => {
+		const url = new URL(location.href);
+		let hasChanged = false;
+		for (const key of [...url.searchParams.keys()]) {
+			const lowerKey = key.toLowerCase();
+			if (lowerKey.startsWith("utm_") || lowerKey === "fbclid") {
+				url.searchParams.delete(key);
+				hasChanged = true;
+			}
+		}
+		if (hasChanged) {
+			history.replaceState(history.state, "", url.toString());
+		}
+	};
+
 	const sleep = (time) => {
 		return new Promise((resolve) => {
 			setTimeout(resolve, time);
@@ -135,6 +150,8 @@
 			.split(/\s*円\s*/);
 		return `${yen}.${sen}`;
 	};
+
+	removeTrackingQueryParams();
 
 	switch (origin) {
 		// ゴールドポイントカード+
