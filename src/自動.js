@@ -218,7 +218,7 @@
 						headers.join(",") +
 						CSV_EOL +
 						rows.map((cols) => cols.map(csvCol).join(",")).join(CSV_EOL);
-					const title = text(".m-debitaccountpanel_billingdate")
+					const title = text(".m-debitaccountpanel_value")
 						.replace(/^.*(\d{4})年(\d+)月.*$/, "$1-$2")
 						.split("-")
 						.map(padDatePart)
